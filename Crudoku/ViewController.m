@@ -78,6 +78,7 @@ BOOL solved = false;
             newCell.column = j;
             newCell.value = 0;
             newCell.cellField = cell;
+            [groupSection[i][j] getGroup: newCell];
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
@@ -103,28 +104,47 @@ BOOL solved = false;
             yOffset = yOffset + 1;
         }
     }
-    //[self setGroupPattern];
 }
 
-/* -(void) setGroupPattern{
-    int groupPattern [9][9] = {
-        {0,0,0,1,1,1,2,2,2},
-        {0,0,0,1,1,1,2,2,2},
-        {0,0,0,1,1,1,2,2,2},
-        {3,3,3,4,4,4,5,5,5},
-        {3,3,3,4,4,4,5,5,5},
-        {3,3,3,4,4,4,5,5,5},
-        {6,6,6,7,7,7,8,8,8},
-        {6,6,6,7,7,7,8,8,8},
-        {6,6,6,7,7,7,8,8,8}
-    };
-    int line = 0;
-    int index = 0;
-    //for (groupPattern in puzzle){
-        
+-(int) getGroup: cell {
+    ViewController *thisCell = cell;
+    if (thisCell.row <= 3 && thisCell.column <= 3){
+        thisCell.group = 0;
+        return thisCell.group;
     }
-    
-} */
+    if (thisCell.row <= 3 && (thisCell.column >= 4 && thisCell.column <= 6)){
+        thisCell.group = 1;
+        return thisCell.group;
+    }
+    if (thisCell.row <= 3 && (thisCell.column >= 7 && thisCell.column <= 9)){
+        thisCell.group = 2;
+        return thisCell.group;
+    }
+    if ((thisCell.row >= 4 && thisCell.row <= 6) && thisCell.column <= 3){
+        thisCell.group = 3;
+        return thisCell.group;
+    }
+    if ((thisCell.row >= 4 && thisCell.row <= 6) && (thisCell.column >= 4 && thisCell.column <= 6)){
+        thisCell.group = 4;
+        return thisCell.group;
+    }
+    if ((thisCell.row >= 4 && thisCell.row <= 6) && (thisCell.column >= 7 && thisCell.column <= 9)){
+        thisCell.group = 5;
+        return thisCell.group;
+    }
+    if ((thisCell.row >= 7 && thisCell.row <= 9) && thisCell.column <= 3){
+        thisCell.group = 6;
+        return thisCell.group;
+    }
+    if ((thisCell.row >= 7 && thisCell.row <=9) && (thisCell.column >= 4 && thisCell.column <= 6)){
+        thisCell.group = 7;
+        return thisCell.group;
+    }
+    if ((thisCell.row >= 7 && thisCell.row >=9) && (thisCell.column >= 7 && thisCell.column <= 9)){
+        thisCell.group = 8;
+        return thisCell.group;
+    }
+}
 
 -(void) initKeyboard {   //This method creates the keyboard that allows you to edit the puzzle
     int xOffset;
@@ -233,7 +253,7 @@ BOOL solved = false;
     ViewController *thisCell = [puzzle objectAtIndex:index];
     
     if (thisCell.value !=0) {  //If cell index has a number in it, run solve method for next cell
-        [self solve:index + 1];
+        [self solve: (index + 1)];
         if (solved) {
             return;
         }
@@ -296,7 +316,7 @@ BOOL solved = false;
         
         if (thisCell.cellPossibilities.count == 1 && thisCell.value == 0) {
             thisCell.value = [[thisCell.cellPossibilities objectAtIndex:0] integerValue];
-            solvedAtLeastOneCell == true;
+            //solvedAtLeastOneCell == true;
         }
         if (thisCell.cellPossibilities.count > 1) {
             allSolved = false;
@@ -328,7 +348,7 @@ BOOL solved = false;
 -(void)updateCellToNum: cell :(int)num{
     ViewController *thisCell = cell;
     for (thisCell in puzzle) {
-        thisCell.cellField.text = [NSString stringWithFormat:@"%d", thisCell.value];
+        thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
         [self updateView];
     }
 }
