@@ -78,7 +78,7 @@ BOOL solved = false;
             newCell.column = j;
             newCell.value = 0;
             newCell.cellField = cell;
-            [groupSection[i][j] getGroup: newCell];
+            newCell.group = [getGroup: newCell];
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
@@ -106,7 +106,7 @@ BOOL solved = false;
     }
 }
 
--(int) getGroup: cell {
+-(int) getGroup: (ViewController *)cell {
     ViewController *thisCell = cell;
     if (thisCell.row <= 3 && thisCell.column <= 3){
         thisCell.group = 0;
