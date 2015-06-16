@@ -19,7 +19,18 @@ NSMutableArray *rowSection[9];
 NSMutableArray *columnSection[9];
 NSMutableArray *groupSection[9];
 
+//----------------
+//
+//		Fields
+//
+//----------------
 BOOL solved = false;
+
+//----------------
+//
+//		System
+//
+//----------------
 
 - (void)viewDidLoad
 {
@@ -52,7 +63,11 @@ BOOL solved = false;
 }
 
 #pragma mark - initialize
-
+//----------------
+//
+//		Init
+//
+//----------------
 -(void)initSudoku {   //The following code creates the sudoku board on the main view
     int xOffset;
     int yOffset = 56;
@@ -61,7 +76,7 @@ BOOL solved = false;
     UIView *dummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     puzzle = [[NSMutableArray alloc] init];
     
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) { //From 1-9
         rowSection[i] = [[NSMutableArray alloc] init];
         columnSection[i] = [[NSMutableArray alloc] init];
         groupSection[i] = [[NSMutableArray alloc] init];
@@ -104,7 +119,7 @@ BOOL solved = false;
         }
     }
     //[self setGroupPattern];
-}
+} //End initSudoku
 
 /* -(void) setGroupPattern{
     int groupPattern [9][9] = {
@@ -153,8 +168,17 @@ BOOL solved = false;
     }
 }
 
-#pragma mark - interface
+//Makes the screen match the array representation
+-(void) updateView {
+    
+}
 
+#pragma mark - interface
+//----------------
+//
+//		Solver
+//
+//----------------
 -(void) setNumber: (id)sender {
     UIButton *buttonPressed = sender;
     NSString *tagAsText = [NSString stringWithFormat:@"%d", buttonPressed.tag];
@@ -223,7 +247,6 @@ BOOL solved = false;
 }
 
 //Recursive method of solution
-
 -(void) solve :(int)index {
     solved = (index > 80);   //If the cell index is greater than 80, the puzzle is finished
     if (solved) {
@@ -252,10 +275,10 @@ BOOL solved = false;
                     return;
                 }
             }
-        }
+        } //End for
         //[self updateCellToNum:thisCell :0];
-    }
-}
+    } //End outer else-if
+} //End solve
          
 -(void) defaultPuzzle {   //This sets up a default puzzle to run on launch
     int t[9][9] =
@@ -276,73 +299,87 @@ BOOL solved = false;
         }
     }
     solved = false;
-}
+} //End default value
          
-//This method updates valid possible cell numbers
-         
+//Updates the domain of each cell
 -(void) refinePossibilities {
     BOOL solvedAtLeastOneCell = false;
     BOOL allSolved = true;
-    for (ViewController *thisCell in puzzle) {
-        for (NSNumber *testNum in [thisCell.cellPossibilities copy]){
-            int num = [testNum integerValue];
+	
+    for (ViewController *thisCell in puzzle) { //For all cells in the puzzle
+		//Remove invalid values from the cell's domain
+        for (NSNumber *testNum in [thisCell.cellPossibilities copy]){ //For each value in the cell's domain
+            int num = [testNum integerValue]; //Take the value
             if (!([self numIsUniqueForCellInRow:thisCell :num] &&   //If the number is not unique for row,
                   [self numIsUniqueForCellInColumn:thisCell :num] && //column, or group
                   [self numIsUniqueForCellInGroup:thisCell :num])) {
-                [thisCell.cellPossibilities removeObject:testNum]; //Remove number from possibilities array
-            }
+                [thisCell.cellPossibilities removeObject:testNum]; //Remove the value from the cell's domain
+            } //End if
             
-        }
-        
-        if (thisCell.cellPossibilities.count == 1 && thisCell.value == 0) {
+         } //End inner-for
+		
+        //If the cell has a domain of one element and has not been set
+        if (thisCell.cellPossibilities.count == 1 && thisCell.value == 0) { 
             thisCell.value = [[thisCell.cellPossibilities objectAtIndex:0] integerValue];
-            solvedAtLeastOneCell == true;
+            solvedAtLeastOneCell = true;
         }
+		
+		//If there are still unsolved cells, don't cry wolf
         if (thisCell.cellPossibilities.count > 1) {
             allSolved = false;
         }
-    }
+		
+    } //End outer-for
     if (!solvedAtLeastOneCell) {
         //solvedAtLeastOneCell = [self onlyPossibleValueMethod];
     }
     if (solvedAtLeastOneCell && !allSolved) {
         [self refinePossibilities];
     }
-}
+} //End refinePossibilities
 
-//Initializes possibilities for cell answers
-
+//Intializes the domain of each cell
 -(void) setPossibilities {
-    for (ViewController *thisCell in puzzle) {
+    for (ViewController *thisCell in puzzle) { //For each cell in the puzzle
         [thisCell.cellPossibilities removeAllObjects];
-        for (int num = 1; num < 10; num++) {
+        for (int num = 1; num < 10; num++) { //For 1-9
             if ([self numIsUniqueForCellInRow:thisCell :num] &&
                 [self numIsUniqueForCellInColumn:thisCell :num] &&
                 [self numIsUniqueForCellInGroup:thisCell :num]) {
                 [thisCell.cellPossibilities addObject:[NSNumber numberWithInt:num]];
-            }
-        }
-    }
-}
-    
+            } //End if
+        } //End inner-for
+    } //End outer-for
+} //End setPossibilities
+
+//Set specified cell's value to num
 -(void)updateCellToNum: cell :(int)num{
     ViewController *thisCell = cell;
     for (thisCell in puzzle) {
-        thisCell.cellField.text = [NSString stringWithFormat:@"%d", thisCell.value];
+        thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
         [self updateView];
     }
 }
 
--(void) updateView {
-    
-}
-
-
-
-
-
-
-
-
+//PseudoCode
+/*
+solve() {
+	setPossibilities();
+	
+	boolean solved = false;
+	
+	while(!solved) {
+		setCellValuesIfPossibilitiesEqualsOneElement(); //For-each cell: If the cell only has one possibility, set its value to that possibility.
+		RefreshDomains(); // Make sure all domains only contain unique values for row/column/group
+		
+		if(allCellsHaveValues()) {
+			solved = true;
+			
+		}
+		
+	} //End while
+	
+} //End solve
+*/
 
 @end
