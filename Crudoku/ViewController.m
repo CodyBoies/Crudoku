@@ -82,7 +82,7 @@ BOOL solved = false;
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
-            [groupSection[i][j] addObject:newCell];
+            //[groupSection[i][j] addObject:newCell];
             
             cell.tag = i * 9 + j + 100;
             cell.backgroundColor = [UIColor whiteColor];
@@ -363,11 +363,10 @@ BOOL solved = false;
     [self setPossibilities];
     
     BOOL solved = false;
-    int num = 0;
     
     while (!solved) {
         if (thisCell.cellPossibilities.count == 1){
-            num = [thisCell.cellPossibilities objectAtIndex:0];
+            int num = [thisCell.cellPossibilities objectAtIndex:0];
             [self updateCellToNum: thisCell : num];
             
         }
