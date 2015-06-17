@@ -33,8 +33,6 @@ NSMutableArray *groupSection[9];
 	// Do any additional setup after loading the view, typically from a nib.
     [self initSudoku];
     [self initKeyboard];
-    [self defaultPuzzle];
-    [self updateView];
 }
 
 -(BOOL)canBecomeFirstResponder {
@@ -149,26 +147,6 @@ NSMutableArray *groupSection[9];
     } //End for loop
 } //end initKeyboard
 
--(void) defaultPuzzle {   //This sets up a default puzzle to run on launch
-    int t[9][9] =
-	{{5,7,0,2,6,0,0,0,0},
-        {2,0,8,0,0,0,0,0,0},
-        {0,9,1,8,0,0,0,0,0},
-        {3,0,7,5,0,0,0,0,0},
-        {6,0,0,0,4,0,0,0,8},
-        {0,0,0,0,0,7,9,0,3},
-        {0,0,0,0,0,8,5,3,0},
-        {0,0,0,0,0,0,1,0,4},
-        {0,0,0,0,1,4,0,7,2}};
-    
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            ViewController *thisCell = [puzzle objectAtIndex:(9 * i + j)];
-            thisCell.value = t[i][j];
-        }
-    } //end for loop
-} //End defaultPuzzle
-
 //------------------------------------
 //
 //		Cell Initialization
@@ -248,13 +226,29 @@ NSMutableArray *groupSection[9];
 
 -(IBAction)solveButton:(id)sender   //Sets action for solve button
 {
-    [self updateView];
+	//Grab the user entered values
+	//For each cell
+	for (ViewController *thisCell in puzzle) {
+		if(![thisCell.cellField.text isEqualToString:@""]) {
+			//Set the cell's value to the entered value
+			thisCell.value = [thisCell.cellField.text intValue];
+			
+		}
+		
+	} //End for loop
+	
+	//Solve the array
     [self solve];
 }
 
+//Clear all the cells
 -(IBAction)resetButton:(id)sender{   //Set the action for the reset button
-    [self defaultPuzzle];
-    [self updateView];
+	for (ViewController *thisCell in puzzle) {
+		thisCell.value = 0;
+		thisCell.cellField.Text = @"";
+		
+	}
+
 }
 
 //------------------------------------
@@ -312,11 +306,9 @@ NSMutableArray *groupSection[9];
     
 -(void)updateCellToNum: cell :(int)num{
     ViewController *thisCell = cell;
-    for (thisCell in puzzle) {
-        thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
-        [self updateView];
-    }
-}
+    thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
+	
+} //End updateCellToNum
 
 -(void) solve {
 	[self setPossibilities];
@@ -382,11 +374,6 @@ NSMutableArray *groupSection[9];
 	return true;
 	
 } //End allCellsHaveValues
-
-
--(void) updateView {
-    
-}
 
 
 @end
