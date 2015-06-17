@@ -8,18 +8,24 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
-
-@end
-
 @implementation ViewController
+
+//------------------------------------
+//
+//		Fields
+//
+//------------------------------------
 
 NSMutableArray *puzzle;
 NSMutableArray *rowSection[9];
 NSMutableArray *columnSection[9];
 NSMutableArray *groupSection[9];
 
-BOOL solved = false;
+//------------------------------------
+//
+//		System
+//
+//------------------------------------
 
 - (void)viewDidLoad
 {
@@ -51,7 +57,11 @@ BOOL solved = false;
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - initialize
+//------------------------------------
+//
+//		Screen Initialization
+//
+//------------------------------------
 
 -(void)initSudoku {   //The following code creates the sudoku board on the main view
     int xOffset;
@@ -66,7 +76,7 @@ BOOL solved = false;
         columnSection[i] = [[NSMutableArray alloc] init];
         groupSection[i] = [[NSMutableArray alloc] init];
         
-    }
+    } //end for loop
     
     for (int i = 0; i < 9; i++) {
         xOffset = 6;
@@ -99,14 +109,71 @@ BOOL solved = false;
                 xOffset = xOffset + 1;
             }
             
-        }
+        } //end inner for loop
+		
         yOffset += (offset + size);
+		
         if (i == 2 || i == 5) {
             yOffset = yOffset + 1;
         }
-    }
-}
+		
+    } //End outer for loop
+} //End initSudoku
 
+-(void) initKeyboard {   //This method creates the keyboard that allows you to edit the puzzle
+    int xOffset;
+    int yOffset = 380;
+    int offset = 6;
+    int xsize = 90;
+    int ysize = 25;
+    int tag = 1;
+    
+    for (int i = 0; i < 3; i++){
+        xOffset = 20;
+        for (int j = 0; j < 3; j++) {
+            UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(xOffset, yOffset, xsize, ysize)];
+            button.tag = tag;
+            [button setTitle: [NSString stringWithFormat:@"%d", tag] forState:UIControlStateNormal];
+            [button addTarget:self action:@selector(setNumber:) forControlEvents:UIControlEventTouchDown];
+            tag++;
+            button.backgroundColor = [UIColor grayColor];
+            button.layer.borderColor = [[UIColor blackColor]CGColor];
+            button.layer.borderWidth = 1.0f;
+            button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+            [self.view addSubview:button];
+            xOffset += (offset + xsize);
+        } //End inner for loop
+		
+        yOffset += (offset + ysize);
+		
+    } //End for loop
+} //end initKeyboard
+
+-(void) defaultPuzzle {   //This sets up a default puzzle to run on launch
+    int t[9][9] =
+	{{5,7,0,2,6,0,0,0,0},
+        {2,0,8,0,0,0,0,0,0},
+        {0,9,1,8,0,0,0,0,0},
+        {3,0,7,5,0,0,0,0,0},
+        {6,0,0,0,4,0,0,0,8},
+        {0,0,0,0,0,7,9,0,3},
+        {0,0,0,0,0,8,5,3,0},
+        {0,0,0,0,0,0,1,0,4},
+        {0,0,0,0,1,4,0,7,2}};
+    
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            ViewController *thisCell = [puzzle objectAtIndex:(9 * i + j)];
+            thisCell.value = t[i][j];
+        }
+    } //end for loop
+} //End defaultPuzzle
+
+//------------------------------------
+//
+//		Cell Initialization
+//
+//------------------------------------
 +(int ) setGroup: (ViewController *) cell {
     
     ViewController *thisCell = cell;
@@ -148,36 +215,7 @@ BOOL solved = false;
         return thisCell.group;
     }
     return thisCell.group;
-}
-
--(void) initKeyboard {   //This method creates the keyboard that allows you to edit the puzzle
-    int xOffset;
-    int yOffset = 380;
-    int offset = 6;
-    int xsize = 90;
-    int ysize = 25;
-    int tag = 1;
-    
-    for (int i = 0; i < 3; i++){
-        xOffset = 20;
-        for (int j = 0; j < 3; j++) {
-            UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(xOffset, yOffset, xsize, ysize)];
-            button.tag = tag;
-            [button setTitle: [NSString stringWithFormat:@"%d", tag] forState:UIControlStateNormal];
-            [button addTarget:self action:@selector(setNumber:) forControlEvents:UIControlEventTouchDown];
-            tag++;
-            button.backgroundColor = [UIColor grayColor];
-            button.layer.borderColor = [[UIColor blackColor]CGColor];
-            button.layer.borderWidth = 1.0f;
-            button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-            [self.view addSubview:button];
-            xOffset += (offset + xsize);
-        }
-        yOffset += (offset + ysize);
-    }
-}
-
-#pragma mark - interface
+} //End setGroup
 
 -(void) setNumber: (id)sender {
     UIButton *buttonPressed = sender;
@@ -189,7 +227,7 @@ BOOL solved = false;
             break;
         }
     }
-}
+} //End setNumber
 
 -(void) clearNumber: (id)sender {
     UITextField *cellTapped = sender;
@@ -200,12 +238,16 @@ BOOL solved = false;
             break;
         }
     }
-}
+} //End clearNumber
+
+//------------------------------------
+//
+//		Action Handlers
+//
+//------------------------------------
 
 -(IBAction)solveButton:(id)sender   //Sets action for solve button
 {
-    [self setPossibilities];
-    [self refinePossibilities];
     [self updateView];
     [self solve];
 }
@@ -215,10 +257,13 @@ BOOL solved = false;
     [self updateView];
 }
 
-#pragma mark - solver
+//------------------------------------
+//
+//		Uniqueness Tests
+//
+//------------------------------------
 
 //These next three methods check to make sure the current number is unique to that cell
-
 -(BOOL)numIsUniqueForCellInRow :(ViewController *)cell :(int)testnum  //Checks row for unique number
 {
     for (ViewController *thisCell in rowSection[cell.row]) {
@@ -246,95 +291,11 @@ BOOL solved = false;
     } return true;
 }
 
-//Recursive method of solution
-
-/* -(void) solve :(int)index {
-    solved = (index > 80);   //If the cell index is greater than 80, the puzzle is finished
-    if (solved) {
-        return;
-    }
-    
-    ViewController *thisCell = [puzzle objectAtIndex:index];
-    
-    if (thisCell.value !=0) {  //If cell index has a number in it, run solve method for next cell
-        [self solve: (index + 1)];
-        if (solved) {
-            return;
-        }
-    }
-    else
-    {
-        for (NSNumber *testNum in thisCell.cellPossibilities){  //Otherwise, if the number is unique to the
-            int num = [testNum integerValue];                   //cell index
-            if ([self numIsUniqueForCellInRow:thisCell :num] &&
-                [self numIsUniqueForCellInColumn:thisCell :num] &&
-                [self numIsUniqueForCellInGroup:thisCell :num])
-            {
-                [self updateCellToNum: thisCell :num];  //Set cell to that number
-                [self solve:index + 1];   //run solve method on next cell
-                if (solved) {
-                    return;
-                }
-            }
-        }
-        //[self updateCellToNum:thisCell :0];
-    }
-} */
-         
--(void) defaultPuzzle {   //This sets up a default puzzle to run on launch
-    int t[9][9] =
-       {{5,7,0,2,6,0,0,0,0},
-        {2,0,8,0,0,0,0,0,0},
-        {0,9,1,8,0,0,0,0,0},
-        {3,0,7,5,0,0,0,0,0},
-        {6,0,0,0,4,0,0,0,8},
-        {0,0,0,0,0,7,9,0,3},
-        {0,0,0,0,0,8,5,3,0},
-        {0,0,0,0,0,0,1,0,4},
-        {0,0,0,0,1,4,0,7,2}};
-    
-    for (int i = 0; i < 9; i++) {
-        for (int j = 0; j < 9; j++) {
-            ViewController *thisCell = [puzzle objectAtIndex:(9 * i + j)];
-            thisCell.value = t[i][j];
-        }
-    }
-    solved = false;
-}
-         
-//This method updates valid possible cell numbers
-         
--(void) refinePossibilities {
-    BOOL solvedAtLeastOneCell = false;
-    BOOL allSolved = true;
-    for (ViewController *thisCell in puzzle) {
-        for (NSNumber *testNum in [thisCell.cellPossibilities copy]){
-            int num = [testNum integerValue];
-            if (!([self numIsUniqueForCellInRow:thisCell :num] &&   //If the number is not unique for row,
-                  [self numIsUniqueForCellInColumn:thisCell :num] && //column, or group
-                  [self numIsUniqueForCellInGroup:thisCell :num])) {
-                [thisCell.cellPossibilities removeObject:testNum]; //Remove number from possibilities array
-            }
-            
-        }
-        
-        if (thisCell.cellPossibilities.count == 1 && thisCell.value == 0) {
-            thisCell.value = [[thisCell.cellPossibilities objectAtIndex:0] integerValue];
-            //solvedAtLeastOneCell == true;
-        }
-        if (thisCell.cellPossibilities.count > 1) {
-            allSolved = false;
-        }
-    }
-    if (!solvedAtLeastOneCell) {
-        //solvedAtLeastOneCell = [self onlyPossibleValueMethod];
-    }
-    if (solvedAtLeastOneCell && !allSolved) {
-        [self refinePossibilities];
-    }
-}
-
-//Initializes possibilities for cell answers
+//------------------------------------
+//
+//		Solving
+//
+//------------------------------------
 
 -(void) setPossibilities {
     for (ViewController *thisCell in puzzle) {
