@@ -119,14 +119,6 @@ NSMutableArray *groupSection[9];
             
         } //end outer for loop
 		
-		for(int i = 0; i < 9; i++) { //For Each Group
-			
-			for (ViewController *thisCell in puzzle) {
-				
-				
-			}
-		}
-		
         yOffset += (offset + size);
 		
         if (i == 2 || i == 5) {
@@ -242,6 +234,16 @@ NSMutableArray *groupSection[9];
     }
 } //End clearNumber
 
+//Clear all the cells
+-(IBAction)resetButton:(id)sender{   //Set the action for the reset button
+	for (ViewController *thisCell in puzzle) {
+		thisCell.value = 0;
+		thisCell.cellField.Text = @"";
+		
+	}
+	
+} //End resetButton
+
 -(IBAction)solveButton:(id)sender   //Sets action for solve button
 {
 	//Grab the user entered values
@@ -250,24 +252,14 @@ NSMutableArray *groupSection[9];
 		if(![thisCell.cellField.text isEqualToString:@""]) {
 			//Set the cell's value to the entered value
 			thisCell.value = [thisCell.cellField.text intValue];
-			
 		}
 		
 	} //End for loop
 	
 	//Solve the array
     [self solve];
-}
-
-//Clear all the cells
--(IBAction)resetButton:(id)sender{   //Set the action for the reset button
-	for (ViewController *thisCell in puzzle) {
-		thisCell.value = 0;
-		thisCell.cellField.Text = @"";
-		
-	}
-
-}
+	
+} //End solve button
 
 //------------------------------------
 //
@@ -310,25 +302,34 @@ NSMutableArray *groupSection[9];
 //------------------------------------
 
 //Change the given cell's value to the given number
--(void)updateCellToNum: cell :(int)num{
-    ViewController *thisCell = cell;
-	thisCell.value = num;
-    thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
-	[thisCell.cellPossibilities removeAllObjects];
+-(void)updateCellToNum: (ViewController*) cell :(int)num{
+	int domain = cell.cellPossibilities.count;
+	
+	cell.value = num;
+    cell.cellField.text = [NSString stringWithFormat:@"%d", num];
+	[cell.cellPossibilities removeAllObjects];
+	
+	NSLog([NSString stringWithFormat:@"Updating:(%d, %d), Domain: %d, Value: %d", cell.row, cell.column, domain, cell.value]);
 	
 } //End updateCellToNum
 
-//Initialized the cells' domains
+//Initialize the cells' domains
 -(void) setPossibilities {
+	//For each cell
     for (ViewController *thisCell in puzzle) {
+		//Clear the cell's domain
         [thisCell.cellPossibilities removeAllObjects];
-        for (int num = 1; num < 10; num++) {
-            if ([self numIsUniqueForCellInRow:thisCell :num] &&
-                [self numIsUniqueForCellInColumn:thisCell :num] &&
-                [self numIsUniqueForCellInGroup:thisCell :num]) {
-                [thisCell.cellPossibilities addObject:[NSNumber numberWithInt:num]];
-            }
-        } //End inner for loop
+	
+		if(thisCell.value != 0) {
+			//From 1-9, if num valid, add it to the cell's domain
+			for (int num = 1; num < 10; num++) {
+				if ([self numIsUniqueForCellInRow:thisCell :num] &&
+					[self numIsUniqueForCellInColumn:thisCell :num] &&
+					[self numIsUniqueForCellInGroup:thisCell :num]) {
+					[thisCell.cellPossibilities addObject:[NSNumber numberWithInteger:num]];
+				}
+			} //End inner for loop
+		}
     } //End outer for loop
 } //End setPossibilities
 
@@ -336,8 +337,8 @@ NSMutableArray *groupSection[9];
 -(void) solve {
 	//Initialize the cells' domains
 	[self setPossibilities];
-    
-    BOOL solved = false;
+	
+    BOOL solved = [self allCellsHaveValues];
     
     while (!solved) {
 		[self setSolvedCells];
@@ -353,12 +354,10 @@ NSMutableArray *groupSection[9];
 {
 	//For each cell
 	for (ViewController *thisCell in puzzle) {
-		
 		//If only one possible value
-		if(thisCell.cellPossibilities.count == 1) {
+		if(thisCell.cellPossibilities.count == 1) { //Not hit
 			//Set the cell's value as the only possible value
-			int value = [thisCell.cellPossibilities[0] integerValue];
-			[self updateCellToNum: thisCell: value];
+			[self updateCellToNum: thisCell: [thisCell.cellPossibilities[0] intValue]]; //Problem Line//
 			
 		}
 	
@@ -372,11 +371,12 @@ NSMutableArray *groupSection[9];
 	for (ViewController *thisCell in puzzle) {
 		//For each possible value
 		for (NSNumber *num in [thisCell.cellPossibilities copy]){
-			//If the value isn't unique, remove it
+			
+			//If the value isn't unique, remove it  //Not hit
 			if (!([self numIsUniqueForCellInRow:thisCell :[num integerValue]] &&   //If the number is not unique for row,
                   [self numIsUniqueForCellInColumn:thisCell :[num integerValue]] && //column, or group
                   [self numIsUniqueForCellInGroup:thisCell :[num integerValue]])) {
-			
+				
 				[thisCell.cellPossibilities removeObject:num];
 				
 			} //end if
@@ -387,13 +387,13 @@ NSMutableArray *groupSection[9];
 -(bool) allCellsHaveValues
 {	
 	//For each cell
-		for (ViewController *thisCell in puzzle) {
+	for (ViewController *thisCell in puzzle) {
 		//If cell.value == 0
-			if(thisCell.value == 0) {
-				return false;
-			} //End if
+		if(thisCell.value == 0) {
+			return false;
+		} //End if
 	
-		} //End for loop
+	} //End for loop
 	
 	return true;
 	
