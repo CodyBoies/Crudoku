@@ -78,7 +78,7 @@ BOOL solved = false;
             newCell.column = j;
             newCell.value = 0;
             newCell.cellField = cell;
-            newCell.group = [setGroup: newCell];
+            newCell.group = [ViewController setGroup: newCell];
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
@@ -107,8 +107,10 @@ BOOL solved = false;
     }
 }
 
--(int) setGroup: (ViewController *)cell {
++(int ) setGroup: (ViewController *) cell {
+    
     ViewController *thisCell = cell;
+    
     if (thisCell.row <= 3 && thisCell.column <= 3){
         thisCell.group = 0;
         return thisCell.group;
@@ -361,10 +363,11 @@ BOOL solved = false;
     [self setPossibilities];
     
     BOOL solved = false;
+    int num = 0;
     
     while (!solved) {
         if (thisCell.cellPossibilities.count == 1){
-            int num = [thisCell.cellPossibilities objectAtIndex:0];
+            num = [thisCell.cellPossibilities objectAtIndex:0];
             [self updateCellToNum: thisCell : num];
             
         }
