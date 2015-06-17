@@ -156,39 +156,39 @@ NSMutableArray *groupSection[9];
     
     ViewController *thisCell = cell;
     
-    if (thisCell.row <= 3 && thisCell.column <= 3){
+    if (thisCell.row <= 2 && thisCell.column <= 2){
         thisCell.group = 0;
         return thisCell.group;
     }
-    if (thisCell.row <= 3 && (thisCell.column >= 4 && thisCell.column <= 6)){
+    if (thisCell.row <= 2 && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 1;
         return thisCell.group;
     }
-    if (thisCell.row <= 3 && (thisCell.column >= 7 && thisCell.column <= 9)){
+    if (thisCell.row <= 2 && thisCell.column >= 6){
         thisCell.group = 2;
         return thisCell.group;
     }
-    if ((thisCell.row >= 4 && thisCell.row <= 6) && thisCell.column <= 3){
+    if ((thisCell.row >= 3 && thisCell.row <= 5) && thisCell.column <= 2){
         thisCell.group = 3;
         return thisCell.group;
     }
-    if ((thisCell.row >= 4 && thisCell.row <= 6) && (thisCell.column >= 4 && thisCell.column <= 6)){
+    if ((thisCell.row >= 3 && thisCell.row <= 5) && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 4;
         return thisCell.group;
     }
-    if ((thisCell.row >= 4 && thisCell.row <= 6) && (thisCell.column >= 7 && thisCell.column <= 9)){
+    if ((thisCell.row >= 3 && thisCell.row <= 5) && (thisCell.column >= 6 && thisCell.column <= 8)){
         thisCell.group = 5;
         return thisCell.group;
     }
-    if ((thisCell.row >= 7 && thisCell.row <= 9) && thisCell.column <= 3){
+    if ((thisCell.row >= 6 && thisCell.row <= 8) && thisCell.column <= 2){
         thisCell.group = 6;
         return thisCell.group;
     }
-    if ((thisCell.row >= 7 && thisCell.row <=9) && (thisCell.column >= 4 && thisCell.column <= 6)){
+    if ((thisCell.row >= 6 && thisCell.row <=8) && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 7;
         return thisCell.group;
     }
-    if ((thisCell.row >= 7 && thisCell.row >=9) && (thisCell.column >= 7 && thisCell.column <= 9)){
+    if ((thisCell.row >= 6 && thisCell.row >=8) && (thisCell.column >= 6 && thisCell.column <= 8)){
         thisCell.group = 8;
         return thisCell.group;
     }
