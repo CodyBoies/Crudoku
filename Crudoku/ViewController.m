@@ -195,6 +195,12 @@ NSMutableArray *groupSection[9];
     return thisCell.group;
 } //End setGroup
 
+//------------------------------------
+//
+//		Action Handlers
+//
+//------------------------------------
+
 -(void) setNumber: (id)sender {
     UIButton *buttonPressed = sender;
     NSString *tagAsText = [NSString stringWithFormat:@"%d", buttonPressed.tag];
@@ -217,12 +223,6 @@ NSMutableArray *groupSection[9];
         }
     }
 } //End clearNumber
-
-//------------------------------------
-//
-//		Action Handlers
-//
-//------------------------------------
 
 -(IBAction)solveButton:(id)sender   //Sets action for solve button
 {
@@ -291,6 +291,13 @@ NSMutableArray *groupSection[9];
 //
 //------------------------------------
 
+-(void)updateCellToNum: cell :(int)num{
+    ViewController *thisCell = cell;
+	thisCell.value = num;
+    thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
+	
+} //End updateCellToNum
+
 -(void) setPossibilities {
     for (ViewController *thisCell in puzzle) {
         [thisCell.cellPossibilities removeAllObjects];
@@ -300,17 +307,12 @@ NSMutableArray *groupSection[9];
                 [self numIsUniqueForCellInGroup:thisCell :num]) {
                 [thisCell.cellPossibilities addObject:[NSNumber numberWithInt:num]];
             }
-        }
-    }
-}
-    
--(void)updateCellToNum: cell :(int)num{
-    ViewController *thisCell = cell;
-    thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
-	
-} //End updateCellToNum
+        } //End inner for loop
+    } //End outer for loop
+} //End setPossibilities
 
 -(void) solve {
+	//Initialize the cells' domains
 	[self setPossibilities];
     
     BOOL solved = false;
@@ -341,7 +343,7 @@ NSMutableArray *groupSection[9];
 	} //End For Loop
 } //End setSolvedCells
 
-//Make sure every cell only has "unique" values in its domain
+//Make sure every cell only has "unique"(valid) values in its domain
 -(void)refreshDomains
 {
 	//For each cell
