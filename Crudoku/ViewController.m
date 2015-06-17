@@ -27,8 +27,6 @@ BOOL solved = false;
 	// Do any additional setup after loading the view, typically from a nib.
     [self initSudoku];
     [self initKeyboard];
-    [self defaultPuzzle];
-    [self updateView];
 }
 
 -(BOOL)canBecomeFirstResponder {
@@ -82,7 +80,7 @@ BOOL solved = false;
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
-            //[groupSection[i][j] addObject:newCell];
+            [groupSection[i] addObject:newCell];
             
             cell.tag = i * 9 + j + 100;
             cell.backgroundColor = [UIColor whiteColor];
@@ -111,42 +109,42 @@ BOOL solved = false;
     
     ViewController *thisCell = cell;
     
-    if (thisCell.row <= 3 && thisCell.column <= 3){
+    if (thisCell.row <= 2 && thisCell.column <= 2){
         thisCell.group = 0;
         return thisCell.group;
     }
-    if (thisCell.row <= 3 && (thisCell.column >= 4 && thisCell.column <= 6)){
+    else if (thisCell.row <= 2 && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 1;
         return thisCell.group;
     }
-    if (thisCell.row <= 3 && (thisCell.column >= 7 && thisCell.column <= 9)){
+    else if (thisCell.row <= 2 && (thisCell.column >= 6 && thisCell.column <= 8)){
         thisCell.group = 2;
         return thisCell.group;
     }
-    if ((thisCell.row >= 4 && thisCell.row <= 6) && thisCell.column <= 3){
+    else if ((thisCell.row >= 3 && thisCell.row <= 5) && thisCell.column <= 2){
         thisCell.group = 3;
         return thisCell.group;
     }
-    if ((thisCell.row >= 4 && thisCell.row <= 6) && (thisCell.column >= 4 && thisCell.column <= 6)){
+    else if ((thisCell.row >= 3 && thisCell.row <= 5) && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 4;
         return thisCell.group;
     }
-    if ((thisCell.row >= 4 && thisCell.row <= 6) && (thisCell.column >= 7 && thisCell.column <= 9)){
+    else if ((thisCell.row >= 3 && thisCell.row <= 5) && (thisCell.column >= 6 && thisCell.column <= 8)){
         thisCell.group = 5;
         return thisCell.group;
     }
-    if ((thisCell.row >= 7 && thisCell.row <= 9) && thisCell.column <= 3){
+    else if ((thisCell.row >= 6 && thisCell.row <= 8) && thisCell.column <= 2){
         thisCell.group = 6;
         return thisCell.group;
     }
-    if ((thisCell.row >= 7 && thisCell.row <=9) && (thisCell.column >= 4 && thisCell.column <= 6)){
+    else if ((thisCell.row >= 6 && thisCell.row <= 8) && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 7;
         return thisCell.group;
     }
-    if ((thisCell.row >= 7 && thisCell.row >=9) && (thisCell.column >= 7 && thisCell.column <= 9)){
+    else{
         thisCell.group = 8;
         return thisCell.group;
-    }
+        }
     return thisCell.group;
 }
 
@@ -206,13 +204,11 @@ BOOL solved = false;
 {
     [self setPossibilities];
     [self refinePossibilities];
-    [self updateView];
-    [self solve:0];
+    [self solve];
 }
 
 -(IBAction)resetButton:(id)sender{   //Set the action for the reset button
     [self defaultPuzzle];
-    [self updateView];
 }
 
 #pragma mark - solver
@@ -352,46 +348,73 @@ BOOL solved = false;
 -(void)updateCellToNum: cell :(int)num{
     ViewController *thisCell = cell;
     for (thisCell in puzzle) {
+        thisCell.value = num;
         thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
-        [self updateView];
+        [thisCell.cellPossibilities removeAllObjects];
     }
 }
 
--(void) solve: (int) index{
-    
-    [self setPossibilities];
+-(void) solve {
+	[self setPossibilities];
     
     BOOL solved = false;
     
     while (!solved) {
-        for (ViewController *cell in puzzle){
-            if (_cellPossibilities.count == 1){
-                int num = [_cellPossibilities objectAtIndex:0];
-                [self updateCellToNum:cell :num];
+		[self setSolvedCells];
+		[self refreshDomains];
+		
+		solved = [self allCellsHaveValues];
+		
+    } //End While Loop
+}
+
+-(void) setSolvedCells
+{
+	//For each cell
+	for (ViewController *thisCell in puzzle) {
+		
+		//If only one possible value
+		if(thisCell.cellPossibilities.count == 1) {
+			//Set the cell's value as the only possible value
+			int value = [thisCell.cellPossibilities[0] integerValue];
+			[self updateCellToNum: thisCell: value];
+			
+		}
+        
+	} //End For Loop
+}
+-(void)refreshDomains
+{
+	//For each cell
+	for (ViewController *thisCell in puzzle) {
+		//For each possible value
+		for (NSNumber *num in [thisCell.cellPossibilities copy]){
+			//If the value isn't unique, remove it
+			if (!([self numIsUniqueForCellInRow:thisCell :[num integerValue]] &&   //If the number is not unique for row,
+                  [self numIsUniqueForCellInColumn:thisCell :[num integerValue]] && //column, or group
+                  [self numIsUniqueForCellInGroup:thisCell :[num integerValue]])) {
                 
-            }
-            else{
-                [self refinePossibilities];
-            }
-            for (ViewController *cell in puzzle){
-                if (cell != 0){
-                    solved = true;
-                }
-            }
-        }
-    }
+				[thisCell.cellPossibilities removeObject:num];
+				
+			} //end if
+		} //End inner for loop
+	} //End outer for loop
 }
 
--(void) updateView {
-    
+-(bool) allCellsHaveValues
+{
+	//For each cell
+    for (ViewController *thisCell in puzzle) {
+		//If cell.value == 0
+        if(thisCell.value == 0) {
+            return false;
+        } //End if
+        
+    } //End for loop
+	
+	return true;
+	
 }
-
-
-
-
-
-
-
 
 
 @end
