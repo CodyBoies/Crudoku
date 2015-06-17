@@ -176,19 +176,19 @@ NSMutableArray *groupSection[9];
         thisCell.group = 4;
         return thisCell.group;
     }
-    if ((thisCell.row >= 3 && thisCell.row <= 5) && (thisCell.column >= 6 && thisCell.column <= 8)){
+    if ((thisCell.row >= 3 && thisCell.row <= 5) && thisCell.column >= 6){
         thisCell.group = 5;
         return thisCell.group;
     }
-    if ((thisCell.row >= 6 && thisCell.row <= 8) && thisCell.column <= 2){
+    if (thisCell.row >= 6 && thisCell.column <= 2){
         thisCell.group = 6;
         return thisCell.group;
     }
-    if ((thisCell.row >= 6 && thisCell.row <=8) && (thisCell.column >= 3 && thisCell.column <= 5)){
+    if (thisCell.row >= 6 && (thisCell.column >= 3 && thisCell.column <= 5)){
         thisCell.group = 7;
         return thisCell.group;
     }
-    if ((thisCell.row >= 6 && thisCell.row >=8) && (thisCell.column >= 6 && thisCell.column <= 8)){
+    if (thisCell.row >= 6 && thisCell.column >= 6){
         thisCell.group = 8;
         return thisCell.group;
     }
