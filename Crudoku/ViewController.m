@@ -78,7 +78,7 @@ BOOL solved = false;
             newCell.column = j;
             newCell.value = 0;
             newCell.cellField = cell;
-     //     newCell.group = [getGroup: newCell];
+            newCell.group = [setGroup: newCell];
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
@@ -107,7 +107,7 @@ BOOL solved = false;
     }
 }
 
--(int) getGroup: (ViewController *)cell {
+-(int) setGroup: (ViewController *)cell {
     ViewController *thisCell = cell;
     if (thisCell.row <= 3 && thisCell.column <= 3){
         thisCell.group = 0;
@@ -145,6 +145,7 @@ BOOL solved = false;
         thisCell.group = 8;
         return thisCell.group;
     }
+    return thisCell.group;
 }
 
 -(void) initKeyboard {   //This method creates the keyboard that allows you to edit the puzzle
