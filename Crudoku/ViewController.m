@@ -78,10 +78,11 @@ BOOL solved = false;
             newCell.column = j;
             newCell.value = 0;
             newCell.cellField = cell;
-            newCell.group = [getGroup: newCell];
+     //     newCell.group = [getGroup: newCell];
             [puzzle addObject:newCell];
             [rowSection[i] addObject:newCell];
             [columnSection[j] addObject:newCell];
+            [groupSection[i][j] addObject:newCell];
             
             cell.tag = i * 9 + j + 100;
             cell.backgroundColor = [UIColor whiteColor];
@@ -244,7 +245,7 @@ BOOL solved = false;
 
 //Recursive method of solution
 
--(void) solve :(int)index {
+/* -(void) solve :(int)index {
     solved = (index > 80);   //If the cell index is greater than 80, the puzzle is finished
     if (solved) {
         return;
@@ -275,7 +276,7 @@ BOOL solved = false;
         }
         //[self updateCellToNum:thisCell :0];
     }
-}
+} */
          
 -(void) defaultPuzzle {   //This sets up a default puzzle to run on launch
     int t[9][9] =
@@ -350,6 +351,28 @@ BOOL solved = false;
     for (thisCell in puzzle) {
         thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
         [self updateView];
+    }
+}
+
+-(void) solve: (int) index{
+    ViewController *thisCell = [puzzle objectAtIndex:index];
+    
+    [self setPossibilities];
+    
+    BOOL solved = false;
+    
+    while (!solved) {
+        if (thisCell.cellPossibilities.count == 1){
+            int num = [thisCell.cellPossibilities objectAtIndex:0];
+            [self updateCellToNum: thisCell : num];
+            
+        }
+        else{
+            [self refinePossibilities];
+        }
+        if (index > 80){
+            solved = true;
+        }
     }
 }
 
