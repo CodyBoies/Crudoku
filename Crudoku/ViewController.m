@@ -358,23 +358,26 @@ BOOL solved = false;
 }
 
 -(void) solve: (int) index{
-    ViewController *thisCell = [puzzle objectAtIndex:index];
     
     [self setPossibilities];
     
     BOOL solved = false;
     
     while (!solved) {
-        if (thisCell.cellPossibilities.count == 1){
-            int num = [thisCell.cellPossibilities objectAtIndex:0];
-            [self updateCellToNum: thisCell : num];
-            
-        }
-        else{
-            [self refinePossibilities];
-        }
-        if (index > 80){
-            solved = true;
+        for (ViewController *cell in puzzle){
+            if (_cellPossibilities.count == 1){
+                int num = [_cellPossibilities objectAtIndex:0];
+                [self updateCellToNum:cell :num];
+                
+            }
+            else{
+                [self refinePossibilities];
+            }
+            for (ViewController *cell in puzzle){
+                if (cell != 0){
+                    solved = true;
+                }
+            }
         }
     }
 }
