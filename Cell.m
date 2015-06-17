@@ -13,6 +13,7 @@
 int row = 0;
 int column = 0;
 int group = 0;
+
 int value = 0;
 
 UITextField *cellField;

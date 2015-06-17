@@ -295,6 +295,7 @@ NSMutableArray *groupSection[9];
     ViewController *thisCell = cell;
 	thisCell.value = num;
     thisCell.cellField.text = [NSString stringWithFormat:@"%d", num];
+	[thisCell.cellPossibilities removeAllObjects];
 	
 } //End updateCellToNum
 
@@ -333,7 +334,7 @@ NSMutableArray *groupSection[9];
 	for (ViewController *thisCell in puzzle) {
 		
 		//If only one possible value
-		if(thisCell.cellPossibilities.count == 0) {
+		if(thisCell.cellPossibilities.count == 1) {
 			//Set the cell's value as the only possible value
 			int value = [thisCell.cellPossibilities[0] integerValue];
 			[self updateCellToNum: thisCell: value];
