@@ -320,7 +320,7 @@ NSMutableArray *groupSection[9];
 		//Clear the cell's domain
         [thisCell.cellPossibilities removeAllObjects];
 	
-		if(thisCell.value != 0) {
+		if(thisCell.value == 0) {
 			//From 1-9, if num valid, add it to the cell's domain
 			for (int num = 1; num < 10; num++) {
 				if ([self numIsUniqueForCellInRow:thisCell :num] &&
@@ -342,6 +342,7 @@ NSMutableArray *groupSection[9];
     
     while (!solved) {
 		[self setSolvedCells];
+		//[self setPossibilities];
 		[self refreshDomains];
 		
 		solved = [self allCellsHaveValues];
@@ -355,7 +356,7 @@ NSMutableArray *groupSection[9];
 	//For each cell
 	for (ViewController *thisCell in puzzle) {
 		//If only one possible value
-		if(thisCell.cellPossibilities.count == 1) { //Not hit
+		if(thisCell.cellPossibilities.count == 1) {
 			//Set the cell's value as the only possible value
 			[self updateCellToNum: thisCell: [thisCell.cellPossibilities[0] intValue]]; //Problem Line//
 			
@@ -372,7 +373,7 @@ NSMutableArray *groupSection[9];
 		//For each possible value
 		for (NSNumber *num in [thisCell.cellPossibilities copy]){
 			
-			//If the value isn't unique, remove it  //Not hit
+			//If the value isn't unique, remove it 
 			if (!([self numIsUniqueForCellInRow:thisCell :[num integerValue]] &&   //If the number is not unique for row,
                   [self numIsUniqueForCellInColumn:thisCell :[num integerValue]] && //column, or group
                   [self numIsUniqueForCellInGroup:thisCell :[num integerValue]])) {
