@@ -207,7 +207,7 @@ BOOL solved = false;
     [self setPossibilities];
     [self refinePossibilities];
     [self updateView];
-    [self solve:0];
+    [self solve];
 }
 
 -(IBAction)resetButton:(id)sender{   //Set the action for the reset button
@@ -357,38 +357,75 @@ BOOL solved = false;
     }
 }
 
--(void) solve: (int) index{
-    ViewController *thisCell = [puzzle objectAtIndex:index];
-    
-    [self setPossibilities];
+-(void) solve {
+	[self setPossibilities];
     
     BOOL solved = false;
     
     while (!solved) {
-        if (thisCell.cellPossibilities.count == 1){
-            int num = [thisCell.cellPossibilities objectAtIndex:0];
-            [self updateCellToNum: thisCell : num];
-            
-        }
-        else{
-            [self refinePossibilities];
-        }
-        if (index > 80){
-            solved = true;
-        }
-    }
-}
+		[self setSolvedCells];
+		[self refreshDomains];
+		
+		solved = [self allCellsHaveValues];
+		
+    } //End While Loop
+} //End solve
+
+//For-each cell, if the cell only has one element in its domain, set the value to that element
+-(void) setSolvedCells
+{
+	//For each cell
+	for (ViewController *thisCell in puzzle) {
+		
+		//If only one possible value
+		if(thisCell.cellPossibilities.count == 0) {
+			//Set the cell's value as the only possible value
+			int value = [thisCell.cellPossibilities[0] integerValue];
+			[self updateCellToNum: thisCell: value];
+			
+		}
+	
+	} //End For Loop
+} //End setSolvedCells
+
+//Make sure every cell only has "unique" values in its domain
+-(void)refreshDomains
+{
+	//For each cell
+	for (ViewController *thisCell in puzzle) {
+		//For each possible value
+		for (NSNumber *num in [thisCell.cellPossibilities copy]){
+			//If the value isn't unique, remove it
+			if (!([self numIsUniqueForCellInRow:thisCell :[num integerValue]] &&   //If the number is not unique for row,
+                  [self numIsUniqueForCellInColumn:thisCell :[num integerValue]] && //column, or group
+                  [self numIsUniqueForCellInGroup:thisCell :[num integerValue]])) {
+			
+				[thisCell.cellPossibilities removeObject:num];
+				
+			} //end if
+		} //End inner for loop	
+	} //End outer for loop
+} //End refreshDomains
+
+-(bool) allCellsHaveValues
+{	
+	//For each cell
+		for (ViewController *thisCell in puzzle) {
+		//If cell.value == 0
+			if(thisCell.value == 0) {
+				return false;
+			} //End if
+	
+		} //End for loop
+	
+	return true;
+	
+} //End allCellsHaveValues
+
 
 -(void) updateView {
     
 }
-
-
-
-
-
-
-
 
 
 @end
