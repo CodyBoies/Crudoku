@@ -33,6 +33,7 @@ NSMutableArray *groupSection[9];
 	// Do any additional setup after loading the view, typically from a nib.
     [self initSudoku];
     [self initKeyboard];
+	
 }
 
 -(BOOL)canBecomeFirstResponder {
@@ -69,17 +70,22 @@ NSMutableArray *groupSection[9];
     UIView *dummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     puzzle = [[NSMutableArray alloc] init];
     
+	//Filling the arrays with arrays
     for (int i = 0; i < 9; i++) {
         rowSection[i] = [[NSMutableArray alloc] init];
         columnSection[i] = [[NSMutableArray alloc] init];
         groupSection[i] = [[NSMutableArray alloc] init];
         
     } //end for loop
-    
+	
+	
+    //Setup the cells
     for (int i = 0; i < 9; i++) {
         xOffset = 6;
         for (int j = 0; j < 9; j++) {
             UITextField *cell = [[UITextField alloc] initWithFrame:CGRectMake(xOffset, yOffset, size, size)];
+			
+			//Setup the cell object
             ViewController *newCell = [[ViewController alloc] init];
             newCell.cellPossibilities = [[NSMutableArray alloc] init];
             newCell.row = i;
@@ -87,11 +93,15 @@ NSMutableArray *groupSection[9];
             newCell.value = 0;
             newCell.cellField = cell;
             newCell.group = [ViewController setGroup: newCell];
+			
+			//Throw the cell in the arrays
             [puzzle addObject:newCell];
-            [rowSection[i] addObject:newCell];
-            [columnSection[j] addObject:newCell];
-            //[groupSection[i][j] addObject:newCell];
+            rowSection[i][j] = newCell;
+            columnSection[j][i] = newCell;
+			NSMutableArray* temp = groupSection[newCell.group];
+            [temp insertObject:newCell atIndex:0];
             
+			//Setup cell graphical crap
             cell.tag = i * 9 + j + 100;
             cell.backgroundColor = [UIColor whiteColor];
             cell.layer.borderColor = [[UIColor blackColor]CGColor];
@@ -105,9 +115,17 @@ NSMutableArray *groupSection[9];
             xOffset += (offset + size);  //sets the grid to look like traditional sudoku board with thicker
             if (j == 2 || j == 5) {      //grid lines between groups
                 xOffset = xOffset + 1;
-            }
+            } //End inner for loop
             
-        } //end inner for loop
+        } //end outer for loop
+		
+		for(int i = 0; i < 9; i++) { //For Each Group
+			
+			for (ViewController *thisCell in puzzle) {
+				
+				
+			}
+		}
 		
         yOffset += (offset + size);
 		
@@ -258,7 +276,7 @@ NSMutableArray *groupSection[9];
 //------------------------------------
 
 //These next three methods check to make sure the current number is unique to that cell
--(BOOL)numIsUniqueForCellInRow :(ViewController *)cell :(int)testnum  //Checks row for unique number
+-(BOOL) numIsUniqueForCellInRow :(ViewController *)cell :(int)testnum  //Checks row for unique number
 {
     for (ViewController *thisCell in rowSection[cell.row]) {
         if (thisCell.value == testnum) {
@@ -291,6 +309,7 @@ NSMutableArray *groupSection[9];
 //
 //------------------------------------
 
+//Change the given cell's value to the given number
 -(void)updateCellToNum: cell :(int)num{
     ViewController *thisCell = cell;
 	thisCell.value = num;
@@ -299,6 +318,7 @@ NSMutableArray *groupSection[9];
 	
 } //End updateCellToNum
 
+//Initialized the cells' domains
 -(void) setPossibilities {
     for (ViewController *thisCell in puzzle) {
         [thisCell.cellPossibilities removeAllObjects];
@@ -312,6 +332,7 @@ NSMutableArray *groupSection[9];
     } //End outer for loop
 } //End setPossibilities
 
+//Solve the given puzzle
 -(void) solve {
 	//Initialize the cells' domains
 	[self setPossibilities];
