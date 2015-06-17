@@ -105,7 +105,7 @@ BOOL solved = false;
     }
 }
 
-+(int ) setGroup: (ViewController *) cell {
++(int) setGroup: (ViewController *) cell {
     
     ViewController *thisCell = cell;
     
@@ -202,13 +202,17 @@ BOOL solved = false;
 
 -(IBAction)solveButton:(id)sender   //Sets action for solve button
 {
-    [self setPossibilities];
-    [self refinePossibilities];
+    //[self setPossibilities];
+    //[self refinePossibilities];
     [self solve];
 }
 
 -(IBAction)resetButton:(id)sender{   //Set the action for the reset button
-    [self defaultPuzzle];
+    //[self defaultPuzzle];
+    for (ViewController *thisCell in puzzle) {
+        thisCell.value = 0;
+        thisCell.cellField.text = @"";
+    }
 }
 
 #pragma mark - solver
@@ -374,7 +378,7 @@ BOOL solved = false;
 	for (ViewController *thisCell in puzzle) {
 		
 		//If only one possible value
-		if(thisCell.cellPossibilities.count == 1) {
+		if(thisCell.cellPossibilities.count == 0 && thisCell.value == 0) {
 			//Set the cell's value as the only possible value
 			int value = [thisCell.cellPossibilities[0] integerValue];
 			[self updateCellToNum: thisCell: value];
@@ -383,6 +387,7 @@ BOOL solved = false;
         
 	} //End For Loop
 }
+
 -(void)refreshDomains
 {
 	//For each cell
